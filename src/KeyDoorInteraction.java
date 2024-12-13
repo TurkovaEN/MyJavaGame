@@ -7,8 +7,8 @@ import javafx.geometry.Rectangle2D;
 
 public class KeyDoorInteraction {
     public boolean hasKey;
-    private ImageView keySprite;
-    private ImageView doorSprite;
+    public ImageView keySprite;
+    public ImageView doorSprite;
     private Image keyTexture;
     private Image doorClosedTexture;
     private Image doorOpenedTexture;

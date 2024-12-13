@@ -1,16 +1,25 @@
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.animation.AnimationTimer;
+import javafx.scene.layout.Pane;
+import javafx.geometry.Rectangle2D;
 
 public class Main extends Application {
+    private long lastNanoTime; // Объявляем переменную как поле класса
+
     @Override
     public void start(Stage primaryStage) {
-        Pane root = new Pane();
-        Scene scene = new Scene(root, 1570, 730);
+        Canvas canvas = new Canvas(1570, 730);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        Pane root = new Pane(canvas);
+        Scene scene = new Scene(root);
 
-        // Load textures
+        // Загрузка текстур
         Image playerImage = new Image("sprite_character.png");
         Image backgroundImage = new Image("background.jpg");
         ImageView background = new ImageView(backgroundImage);
@@ -26,27 +35,30 @@ public class Main extends Application {
         root.getChildren().add(keyDoor.keySprite);
         root.getChildren().add(keyDoor.doorSprite);
 
-        long lastNanoTime = System.nanoTime();
+        long NanoTime = System.nanoTime(); // Инициализация переменной
+
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 double time = (now - lastNanoTime) / 1_000_000.0;
                 lastNanoTime = now;
 
-                playerController.handleInput(player);
+                //playerController.handleInput(player);
                 player.update(time, mapCollider);
 
-                // Check for key collision
-                if (keyDoor.checkKeyCollision(player.rect)) {
+                // Проверка на столкновение с ключом
+                if (keyDoor.checkKeyCollision(new Rectangle2D(player.rect.getMinX(), player.rect.getMinY(), player.rect.getWidth(), player.rect.getHeight()))) {
                     keyDoor.handleKeyCollision();
                 }
-                // Check for door collision and transition to next level
-                if (keyDoor.checkDoorCollision(player.rect) && keyDoor.isDoorOpen()) {
+                // Проверка на столкновение с открытой дверью и переход на следующий уровень
+                if (keyDoor.checkDoorCollision(new Rectangle2D(player.rect.getMinX(), player.rect.getMinY(), player.rect.getWidth(), player.rect.getHeight())) && keyDoor.isDoorOpen()) {
                     keyDoor.showWinMessage(root);
-                    stop(); // Stop the game after winning
+                    stop(); // Остановить игру после победы
                 }
 
-                gameMap.draw(root.getGraphicsContext2D());
+                gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); // Очистка канваса
+                gameMap.draw(gc); // Рисуем карту
+                // Рисуем другие элементы, если необходимо
             }
         };
         timer.start();

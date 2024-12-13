@@ -2,9 +2,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class Map {
-    private static final int H = 23;
-    private static final int W = 50;
-    private static final int TILE_SIZE = 32;
+    public static final int H = 23;
+    public static final int W = 50;
+    public static final int TILE_SIZE = 32;
 
     private Image stoneTexture;
     public static String[] tileMap = {
