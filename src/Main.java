@@ -20,16 +20,16 @@ public class Main extends Application {
         Scene scene = new Scene(root);
 
         // Загрузка текстур
-        Image playerImage = new Image("sprite_character.png");
-        Image backgroundImage = new Image("background.jpg");
+        Image playerImage = new Image("/sprite_character.png");
+        Image backgroundImage = new Image("/background.jpg");
         ImageView background = new ImageView(backgroundImage);
         root.getChildren().add(background);
 
-        Map gameMap = new Map("stone.jpg");
+        Map gameMap = new Map("/stone.jpg");
         Player player = new Player(playerImage);
         MapCollider mapCollider = new MapCollider();
         PlayerController playerController = new PlayerController();
-        KeyDoorInteraction keyDoor = new KeyDoorInteraction("key.png", "door_close.png", "door_open.png", "ofont.ru_Arial Cyr.ttf");
+        KeyDoorInteraction keyDoor = new KeyDoorInteraction("/key.png", "/door_close.jpg", "/door_open.jpg", "/arialmt.ttf");
 
         root.getChildren().add(player.sprite);
         root.getChildren().add(keyDoor.keySprite);
