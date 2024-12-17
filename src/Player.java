@@ -16,6 +16,9 @@ public class Player {
         dx = dy = 0.1;
         currentFrame = 0;
         sprite.setViewport(new Rectangle2D(245, 186, 110, 112));
+
+        // Установим масштаб по умолчанию (не отражаем)
+        sprite.setScaleX(1); // Нормальное положение спрайта
     }
 
     public void update(double time, MapCollider mapCollider) {
@@ -47,10 +50,14 @@ public class Player {
         if (currentFrame > 7) currentFrame -= 7;
 
         // Обновление спрайта по направлению
-        if (dx > 0)
+        if (dx > 0) {
             sprite.setViewport(new Rectangle2D(160 * (int) currentFrame + 245, 185, 95, 118));
-        if (dx < 0)
-            sprite.setViewport(new Rectangle2D(160 * (int) currentFrame + 245 + 95, 185, -95, 118));
+            sprite.setScaleX(1); // Нормальная ориентация спрайта (движение вправо)
+        }
+        if (dx < 0) {
+            sprite.setViewport(new Rectangle2D(160 * (int) currentFrame + 245, 185, 95, 118)); // Отражаем спрайт, но не меняем размер
+            sprite.setScaleX(-1); // Отражение спрайта (движение влево)
+        }
 
         // Обновляем позицию спрайта
         sprite.setLayoutX(rect.getMinX());
