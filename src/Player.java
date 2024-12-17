@@ -1,14 +1,13 @@
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 
 public class Player {
-    public double dx, dy; // speed
-    public Rectangle2D rect; // coordinates width and height
-    public boolean onGround; // check if sprite is on the ground
-    public ImageView sprite; // sprite
+    public double dx, dy; // скорость
+    public Rectangle2D rect; // координаты, ширина и высота
+    public boolean onGround; // проверка, находится ли спрайт на земле
+    public ImageView sprite; // спрайт
     private double currentFrame;
-
 
     public Player(Image image) {
         sprite = new ImageView(image);
@@ -20,27 +19,44 @@ public class Player {
     }
 
     public void update(double time, MapCollider mapCollider) {
-        rect = new Rectangle2D(rect.getMinX() + dx * time, rect.getMinY(), rect.getWidth(), rect.getHeight()); // x coordinate
-        mapCollider.handleCollision(rect, new double[]{dx, dy}, new boolean[]{onGround}, 0); // Horizontal collision
+        // Обновляем горизонтальное движение
+        rect = new Rectangle2D(rect.getMinX() + dx * time, rect.getMinY(), rect.getWidth(), rect.getHeight());
 
-        if (!onGround)
-            dy += 0.0005 * time; // gravity acceleration during jump
-        rect = new Rectangle2D(rect.getMinX(), rect.getMinY() + dy * time, rect.getWidth(), rect.getHeight()); // y coordinate
-        onGround = false;
-        mapCollider.handleCollision(rect, new double[]{dx, dy}, new boolean[]{onGround}, 1); // Vertical collision
+        // Обрабатываем столкновение с картой по горизонтали
+        rect = mapCollider.handleCollision(rect, new double[]{dx, dy}, new boolean[]{onGround}, 0); // Горизонтальное столкновение
 
+        // Обрабатываем гравитацию (если персонаж не на земле)
+        if (!onGround) {
+            dy += 0.0005 * time; // Ускорение гравитации
+        }
+
+        // Обновляем вертикальное движение
+        rect = new Rectangle2D(rect.getMinX(), rect.getMinY() + dy * time, rect.getWidth(), rect.getHeight());
+
+        // Обрабатываем столкновение с картой по вертикали
+        onGround = false; // Пока не обнаружим столкновение, на земле не стоим
+        rect = mapCollider.handleCollision(rect, new double[]{dx, dy}, new boolean[]{onGround}, 1); // Вертикальное столкновение
+
+        // Если персонаж на земле, сбрасываем вертикальную скорость
+        if (onGround) {
+            dy = 0; // Останавливаем вертикальное движение
+        }
+
+        // Обновление спрайта
         currentFrame += 0.005 * time;
-        if (currentFrame > 7)
-            currentFrame -= 7;
+        if (currentFrame > 7) currentFrame -= 7;
 
+        // Обновление спрайта по направлению
         if (dx > 0)
             sprite.setViewport(new Rectangle2D(160 * (int) currentFrame + 245, 185, 95, 118));
         if (dx < 0)
             sprite.setViewport(new Rectangle2D(160 * (int) currentFrame + 245 + 95, 185, -95, 118));
 
+        // Обновляем позицию спрайта
         sprite.setLayoutX(rect.getMinX());
-        sprite.setLayoutY(rect.getMinY()); // set sprite position x, y
+        sprite.setLayoutY(rect.getMinY());
 
+        // Останавливаем горизонтальное движение (пока клавиша не отпущена)
         dx = 0;
     }
 }

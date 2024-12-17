@@ -5,6 +5,8 @@ import javafx.scene.text.Font;
 import javafx.scene.layout.Pane;
 import javafx.geometry.Rectangle2D;
 
+import java.io.InputStream;
+
 public class KeyDoorInteraction {
     public boolean hasKey;
     public ImageView keySprite;
@@ -14,9 +16,7 @@ public class KeyDoorInteraction {
     private Image doorOpenedTexture;
     private Text keyText;
 
-
-
-    public KeyDoorInteraction(String keyPath, String doorClosedPath, String doorOpenedPath, String fontPath) {
+    public KeyDoorInteraction(InputStream keyPath, InputStream doorClosedPath, InputStream doorOpenedPath, String fontPath) {
         hasKey = false;
         keyTexture = new Image(keyPath);
         doorClosedTexture = new Image(doorClosedPath);
@@ -29,7 +29,7 @@ public class KeyDoorInteraction {
         keyText.setFill(javafx.scene.paint.Color.WHITE);
         updateKeyText();
 
-        // Initial positions of key and door
+        // Начальные позиции ключа и двери
         keySprite.setLayoutX(1420);
         keySprite.setLayoutY(160);
         doorSprite.setLayoutX(1280);
@@ -53,13 +53,12 @@ public class KeyDoorInteraction {
                 keySprite.getImage().getHeight()
         );
         return keyBounds.intersects(playerRect);
-        //return keySprite.getBoundsInParent().intersects(playerRect);
     }
 
     public void handleKeyCollision() {
         hasKey = true;
         updateKeyText();
-        keySprite.setLayoutX(-100); // Remove key from screen
+        keySprite.setLayoutX(-100); // Убираем ключ с экрана
         doorSprite.setImage(doorOpenedTexture);
     }
 
@@ -71,7 +70,6 @@ public class KeyDoorInteraction {
                 doorSprite.getImage().getHeight()
         );
         return doorBounds.intersects(playerRect);
-        // return doorSprite.getBoundsInParent().intersects(playerRect);
     }
 
     public boolean isDoorOpen() {
@@ -85,7 +83,7 @@ public class KeyDoorInteraction {
         winText.setLayoutX((pane.getWidth() - winText.getLayoutBounds().getWidth()) / 2);
         winText.setLayoutY((pane.getHeight() - winText.getLayoutBounds().getHeight()) / 2);
         pane.getChildren().add(winText);
-        // Pause for 3 seconds
+        // Пауза на 3 секунды
         new Thread(() -> {
             try {
                 Thread.sleep(3000);

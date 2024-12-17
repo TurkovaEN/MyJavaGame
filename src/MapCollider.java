@@ -1,44 +1,45 @@
 import javafx.geometry.Rectangle2D;
 
 public class MapCollider {
-    public boolean checkCollision(Rectangle2D rect, int dir) {
+
+    // Функция проверки столкновений со стенами по всем сторонам
+    public Rectangle2D handleCollision(Rectangle2D rect, double[] dxdy, boolean[] onGround, int dir) {
+        boolean collided = false;
+
+        // Проверяем все клетки карты, с которыми может столкнуться персонаж
         for (int i = (int) rect.getMinY() / Map.TILE_SIZE; i < (rect.getMaxY() / Map.TILE_SIZE); i++) {
             for (int j = (int) rect.getMinX() / Map.TILE_SIZE; j < (rect.getMaxX() / Map.TILE_SIZE); j++) {
                 if (i >= 0 && i < Map.H && j >= 0 && j < Map.W && Map.tileMap[i].charAt(j) == '#') {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+                    // Если столкновение происходит
+                    collided = true;
 
-
-        public void handleCollision(Rectangle2D rect, double[] dxdy, boolean[] onGround, int dir) {
-            for (int i = (int) rect.getMinY() / Map.TILE_SIZE; i < (rect.getMaxY() / Map.TILE_SIZE); i++) {
-                for (int j = (int) rect.getMinX() / Map.TILE_SIZE; j < (rect.getMaxX() / Map.TILE_SIZE); j++) {
-                    if (i >= 0 && i < Map.H && j >= 0 && j < Map.W && Map.tileMap[i].charAt(j) == '#') {
-                        if (dir == 0) { // Horizontal collision
-                            if (dxdy[0] > 0) {
-                                rect = new Rectangle2D(j * Map.TILE_SIZE - rect.getWidth(), rect.getMinY(), rect.getWidth(), rect.getHeight());
-                            }
-                            if (dxdy[0] < 0) {
-                                rect = new Rectangle2D(j * Map.TILE_SIZE + Map.TILE_SIZE, rect.getMinY(), rect.getWidth(), rect.getHeight());
-                            }
-                            dxdy[0] = 0;
-                        } else { // Vertical collision
-                            if (dxdy[1] > 0) {
-                                rect = new Rectangle2D(rect.getMinX(), i * Map.TILE_SIZE - rect.getHeight(), rect.getWidth(), rect.getHeight());
-                                dxdy[1] = 0;
-                                onGround[0] = true;
-                            }
-                            if (dxdy[1] < 0) {
-                                rect = new Rectangle2D(rect.getMinX(), i * Map.TILE_SIZE + Map.TILE_SIZE, rect.getWidth(), rect.getHeight());
-                                dxdy[1] = 0;
-                            }
+                    if (dir == 0) {  // Горизонтальное столкновение (по X)
+                        // Столкновение с правой стеной
+                        if (dxdy[0] > 0) {
+                            rect = new Rectangle2D(j * Map.TILE_SIZE - rect.getWidth(), rect.getMinY(), rect.getWidth(), rect.getHeight());
                         }
-                        break;
+                        // Столкновение с левой стеной
+                        if (dxdy[0] < 0) {
+                            rect = new Rectangle2D(j * Map.TILE_SIZE + Map.TILE_SIZE, rect.getMinY(), rect.getWidth(), rect.getHeight());
+                        }
+                        dxdy[0] = 0; // Обнуляем горизонтальную скорость
+                    } else {  // Вертикальное столкновение (по Y)
+                        // Столкновение с верхней стеной
+                        if (dxdy[1] < 0) {
+                            rect = new Rectangle2D(rect.getMinX(), i * Map.TILE_SIZE + Map.TILE_SIZE, rect.getWidth(), rect.getHeight());
+                            dxdy[1] = 0; // Обнуляем вертикальную скорость
+                        }
+                        // Столкновение с нижней стеной
+                        if (dxdy[1] > 0) {
+                            rect = new Rectangle2D(rect.getMinX(), i * Map.TILE_SIZE - rect.getHeight(), rect.getWidth(), rect.getHeight());
+                            dxdy[1] = 0; // Обнуляем вертикальную скорость
+                            onGround[0] = true; // Персонаж на земле
+                        }
                     }
+                    break;  // Прерываем цикл, так как мы уже нашли столкновение
                 }
             }
         }
+        return rect; // Возвращаем обновленный rect с учетом столкновения
+    }
 }
