@@ -16,35 +16,42 @@ public class KeyDoorInteraction {
     private Image doorOpenedTexture;
     private Text keyText;
 
+    // Конструктор, загружающий изображения ключа и двери
     public KeyDoorInteraction(InputStream keyPath, InputStream doorClosedPath, InputStream doorOpenedPath, String fontPath) {
         hasKey = false;
         keyTexture = new Image(keyPath);
         doorClosedTexture = new Image(doorClosedPath);
         doorOpenedTexture = new Image(doorOpenedPath);
 
+        // Инициализация изображений для ключа и двери
         keySprite = new ImageView(keyTexture);
         doorSprite = new ImageView(doorClosedTexture);
+
+        // Инициализация текста для отображения состояния ключа
         keyText = new Text();
         keyText.setFont(new Font(30));
         keyText.setFill(javafx.scene.paint.Color.WHITE);
         updateKeyText();
 
-        // Начальные позиции ключа и двери
+        // Начальные позиции для ключа и двери
         keySprite.setLayoutX(1420);
         keySprite.setLayoutY(160);
         doorSprite.setLayoutX(1280);
         doorSprite.setLayoutY(550);
     }
 
+    // Метод для обновления текста состояния ключа
     public void updateKeyText() {
         String keyStatus = hasKey ? "yes" : "no";
         keyText.setText("Key: " + keyStatus);
     }
 
+    // Метод для добавления ключа и двери на панель
     public void draw(Pane pane) {
         pane.getChildren().addAll(keySprite, doorSprite, keyText);
     }
 
+    // Метод для проверки столкновения с ключом
     public boolean checkKeyCollision(Rectangle2D playerRect) {
         Rectangle2D keyBounds = new Rectangle2D(
                 keySprite.getLayoutX(),
@@ -55,13 +62,15 @@ public class KeyDoorInteraction {
         return keyBounds.intersects(playerRect);
     }
 
+    // Метод для обработки столкновения с ключом
     public void handleKeyCollision() {
         hasKey = true;
         updateKeyText();
         keySprite.setLayoutX(-100); // Убираем ключ с экрана
-        doorSprite.setImage(doorOpenedTexture);
+        doorSprite.setImage(doorOpenedTexture); // Меняем изображение двери на открытую
     }
 
+    // Метод для проверки столкновения с дверью
     public boolean checkDoorCollision(Rectangle2D playerRect) {
         Rectangle2D doorBounds = new Rectangle2D(
                 doorSprite.getLayoutX(),
@@ -72,10 +81,12 @@ public class KeyDoorInteraction {
         return doorBounds.intersects(playerRect);
     }
 
+    // Метод для проверки, открыта ли дверь
     public boolean isDoorOpen() {
         return hasKey;
     }
 
+    // Метод для отображения сообщения о победе
     public void showWinMessage(Pane pane) {
         Text winText = new Text("You completed the level! Continuing the game is in development...");
         winText.setFont(new Font(32));
