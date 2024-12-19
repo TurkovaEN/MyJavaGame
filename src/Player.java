@@ -2,6 +2,8 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 
+
+
 public class Player {
     public double dx, dy; // скорость
     public Rectangle2D rect; // координаты, ширина и высота
@@ -11,59 +13,51 @@ public class Player {
 
     public Player(Image image) {
         sprite = new ImageView(image);
-        rect = new Rectangle2D(245, 186, 110, 112); // rect (x,y, width, height)
+        rect = new Rectangle2D(245, 186, 110, 112); // Начальная позиция персонажа
 
-        dx = dy = 0.1;
+        dx = 0; // Горизонтальная скорость
+        dy = 0; // Вертикальная скорость
         currentFrame = 0;
         sprite.setViewport(new Rectangle2D(245, 186, 110, 112));
-
-        // Установим масштаб по умолчанию (не отражаем)
-        sprite.setScaleX(1); // Нормальное положение спрайта
     }
 
     public void update(double time, MapCollider mapCollider) {
-        // Обновляем горизонтальное движение
-        rect = new Rectangle2D(rect.getMinX() + dx * time, rect.getMinY(), rect.getWidth(), rect.getHeight());
+        double[] movement = {dx, dy}; // Сохраняем текущие скорости
+        boolean[] onGroundFlag = {onGround};
 
-        // Обрабатываем столкновение с картой по горизонтали
-        rect = mapCollider.handleCollision(rect, new double[]{dx, dy}, new boolean[]{onGround}, 0); // Горизонтальное столкновение
+        // Горизонтальное движение
+        rect = new Rectangle2D(rect.getMinX() + movement[0] * time, rect.getMinY(), rect.getWidth(), rect.getHeight());
+        rect = mapCollider.handleCollision(rect, movement, onGroundFlag, 0);
 
-        // Обрабатываем гравитацию (если персонаж не на земле)
+        // Вертикальное движение с учетом гравитации
         if (!onGround) {
-            dy += 0.0005 * time; // Ускорение гравитации
+            dy += 0.0015 * time; // Гравитация (ускорение вниз)
         }
+        movement[1] = dy;
 
-        // Обновляем вертикальное движение
-        rect = new Rectangle2D(rect.getMinX(), rect.getMinY() + dy * time, rect.getWidth(), rect.getHeight());
+        rect = new Rectangle2D(rect.getMinX(), rect.getMinY() + movement[1] * time, rect.getWidth(), rect.getHeight());
+        rect = mapCollider.handleCollision(rect, movement, onGroundFlag, 1);
 
-        // Обрабатываем столкновение с картой по вертикали
-        onGround = false; // Пока не обнаружим столкновение, на земле не стоим
-        rect = mapCollider.handleCollision(rect, new double[]{dx, dy}, new boolean[]{onGround}, 1); // Вертикальное столкновение
-
-        // Если персонаж на земле, сбрасываем вертикальную скорость
-        if (onGround) {
-            dy = 0; // Останавливаем вертикальное движение
-        }
-
-        // Обновление спрайта
-        currentFrame += 0.005 * time;
-        if (currentFrame > 7) currentFrame -= 7;
-
-        // Обновление спрайта по направлению
-        if (dx > 0) {
-            sprite.setViewport(new Rectangle2D(160 * (int) currentFrame + 245, 185, 95, 118));
-            sprite.setScaleX(1); // Нормальная ориентация спрайта (движение вправо)
-        }
-        if (dx < 0) {
-            sprite.setViewport(new Rectangle2D(160 * (int) currentFrame + 245, 185, 95, 118)); // Отражаем спрайт, но не меняем размер
-            sprite.setScaleX(-1); // Отражение спрайта (движение влево)
-        }
+        // Обновляем флаг onGround
+        onGround = onGroundFlag[0];
 
         // Обновляем позицию спрайта
-        sprite.setLayoutX(rect.getMinX());
+        sprite.setLayoutX(rect.getMinX ());
         sprite.setLayoutY(rect.getMinY());
 
-        // Останавливаем горизонтальное движение (пока клавиша не отпущена)
+        // Анимация и направление спрайта
+        currentFrame += Math.abs(dx) * 0.02 * time; // Анимация только при движении
+        if (currentFrame > 7) currentFrame -= 7;
+
+        if (dx > 0) {
+            sprite.setViewport(new Rectangle2D(160 * (int) currentFrame + 245, 185, 95, 118));
+            sprite.setScaleX(1); // Движение вправо
+        } else if (dx < 0) {
+            sprite.setViewport(new Rectangle2D(160 * (int) currentFrame + 245, 185, 95, 118));
+            sprite.setScaleX(-1); // Движение влево (отражение)
+        }
+
+        // Сброс dx после каждого кадра
         dx = 0;
     }
 }
