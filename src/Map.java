@@ -4,11 +4,11 @@ import javafx.scene.image.Image;
 import java.io.InputStream;
 
 public class Map {
-    public static final int H = 24;
-    public static final int W = 49;
-    public static final int TILE_SIZE = 32;
+    public static final int H = 24; // Высота карты
+    public static final int W = 49; // Ширина карты
+    public static final int TILE_SIZE = 32; // Размер тайла
 
-    private Image stoneTexture;
+    private Image stoneTexture; // Текстура камня
     public static String[] tileMap = {
             "#################################################",
             "#                                               #",
@@ -36,9 +36,12 @@ public class Map {
             "#################################################"
     };
 
+    // Конструктор, загружающий текстуру камня
     public Map(InputStream stonePath) {
         stoneTexture = new Image(stonePath);
     }
+
+    // Метод для отрисовки карты
     public void draw(GraphicsContext gc) {
         for (int i = 0; i < H; i++) {
             for (int j = 0; j < W; j++) {
@@ -51,11 +54,5 @@ public class Map {
         }
     }
 
-    public int getWidth() {
-        return W * TILE_SIZE;
-    }
 
-    public int getHeight() {
-        return H * TILE_SIZE;
-    }
 }

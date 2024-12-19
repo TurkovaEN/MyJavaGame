@@ -2,7 +2,7 @@ import javafx.geometry.Rectangle2D;
 
 public class MapCollider {
 
-    // Функция проверки столкновений со стенами по всем сторонам
+    // Метод проверки столкновений со стенами
     public Rectangle2D handleCollision(Rectangle2D rect, double[] dxdy, boolean[] onGround, int dir) {
         boolean collided = false;
 
@@ -10,10 +10,9 @@ public class MapCollider {
         for (int i = (int) rect.getMinY() / Map.TILE_SIZE; i < (rect.getMaxY() / Map.TILE_SIZE); i++) {
             for (int j = (int) rect.getMinX() / Map.TILE_SIZE; j < (rect.getMaxX() / Map.TILE_SIZE); j++) {
                 if (i >= 0 && i < Map.H && j >= 0 && j < Map.W && Map.tileMap[i].charAt(j) == '#') {
-                    // Если столкновение происходит
-                    collided = true;
+                    collided = true; // Обнаружено столкновение
 
-                    if (dir == 0) {  // Горизонтальное столкновение (по X)
+                    if (dir == 0) {  // Горизонтальное столкновение
                         // Столкновение с правой стеной
                         if (dxdy[0] > 0) {
                             rect = new Rectangle2D(j * Map.TILE_SIZE - rect.getWidth(), rect.getMinY(), rect.getWidth(), rect.getHeight());
@@ -23,7 +22,7 @@ public class MapCollider {
                             rect = new Rectangle2D(j * Map.TILE_SIZE + Map.TILE_SIZE, rect.getMinY(), rect.getWidth(), rect.getHeight());
                         }
                         dxdy[0] = 0; // Обнуляем горизонтальную скорость
-                    } else {  // Вертикальное столкновение (по Y)
+                    } else {  // Вертикальное столкновение
                         // Столкновение с верхней стеной
                         if (dxdy[1] < 0) {
                             rect = new Rectangle2D(rect.getMinX(), i * Map.TILE_SIZE + Map.TILE_SIZE, rect.getWidth(), rect.getHeight());
