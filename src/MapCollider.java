@@ -41,4 +41,22 @@ public class MapCollider {
         }
         return rect; // Возвращаем обновленный rect с учетом столкновения
     }
+    // Новый метод для подсчета столкновений
+    public int countCollisions(Rectangle2D rect) {
+        int collisionCount = 0;
+
+        // Проверяем все клетки карты, с которыми может столкнуться персонаж
+        for (int i = (int) rect.getMinY() / Map.TILE_SIZE; i < (rect.getMaxY() / Map.TILE_SIZE); i++) {
+            for (int j = (int) rect.getMinX() / Map.TILE_SIZE; j < (rect.getMaxX() / Map.TILE_SIZE); j++) {
+                // Проверяем, что индексы находятся в пределах карты
+                if (i >= 0 && i < Map.H && j >= 0 && j < Map.W) {
+                    // Проверяем, есть ли препятствие в данной клетке
+                    if (Map.tileMap[i].charAt(j) == '#') {
+                        collisionCount++; // Увеличиваем счетчик столкновений
+                    }
+                }
+            }
+        }
+        return collisionCount; // Возвращаем количество столкновений
+    }
 }

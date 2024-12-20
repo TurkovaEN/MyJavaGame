@@ -11,7 +11,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 public class Main extends Application {
-    private long lastNanoTime; // Время последнего обновления
+    private long lastNanoTime;
 
     @Override
     public void start(Stage primaryStage) {
@@ -26,9 +26,11 @@ public class Main extends Application {
         // Загрузка фона и добавление на экран
         Image backgroundImage = new Image(getClass().getResourceAsStream("/background.jpg"));
         ImageView background = new ImageView(backgroundImage);
-        background.setFitWidth(scene.getWidth());
-        background.setFitHeight(scene.getHeight());
-        background.setPreserveRatio(false);
+
+        // Устанавливаем фон, чтобы он заполнил весь экран
+        background.setFitWidth(scene.getWidth()); // Устанавливаем ширину фона, равную ширине сцены
+        background.setFitHeight(scene.getHeight()); // Устанавливаем высоту фона, равную высоте сцены
+        background.setPreserveRatio(false); // Отключаем сохранение пропорций, чтобы фон растягивался по всему экрану
         root.getChildren().add(background);
 
         // Инициализация объектов игры
@@ -36,6 +38,8 @@ public class Main extends Application {
         Player player = new Player(new Image(getClass().getResourceAsStream("/sprite_character.png")));
         MapCollider mapCollider = new MapCollider();
         PlayerController playerController = new PlayerController();
+
+        /*
         KeyDoorInteraction keyDoorInteraction = new KeyDoorInteraction(
                 getClass().getResourceAsStream("/key.png"),
                 getClass().getResourceAsStream("/door_close.jpg"),
@@ -44,21 +48,51 @@ public class Main extends Application {
         );
         keyDoorInteraction.draw(root); // Отображаем ключ и дверь
 
-        // Добавление канваса для отрисовки карты и спрайта игрока
+
+         */
+        KeyDoorInteraction[] interactions = {
+                new KeyDoorInteraction(
+                        getClass().getResourceAsStream("/key2.jpg"),
+                        getClass().getResourceAsStream("/door_close2.jpg"),
+                        getClass().getResourceAsStream("/door_open2.jpg"),
+                        "arialmt.ttf"
+                ),
+
+                new KeyDoorInteraction(
+                        getClass().getResourceAsStream("/key.png"),
+                        getClass().getResourceAsStream("/door_close.jpg"),
+                        getClass().getResourceAsStream("/door_open.jpg"),
+
+                        "arialmt.ttf"
+                )
+
+
+        };
+
+        for (KeyDoorInteraction interaction : interactions) {
+            interaction.draw(root);
+        }
+
+        // Добавление канваса для отрисовки карты
         root.getChildren().add(canvas);
         root.getChildren().add(player.sprite);
 
-        // Анимационный таймер для обновления состояния игры
+        // Анимационный таймер
         lastNanoTime = System.nanoTime();
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                double time = (now - lastNanoTime) / 1_000_000.0; // Вычисляем время с последнего обновления
+                double time = (now - lastNanoTime) / 1_000_000.0;
                 lastNanoTime = now;
 
-                // Обновление состояния игрока
+                // Обновление состояния игры
                 player.update(time, mapCollider);
 
+                // Подсчет столкновений
+                int collisionCount = mapCollider.countCollisions(player.rect);
+                System.out.println("Number of collisions: " + collisionCount);
+
+/*
                 // Проверка столкновения с ключом
                 if (keyDoorInteraction.checkKeyCollision(player.rect)) {
                     keyDoorInteraction.handleKeyCollision();
@@ -67,6 +101,20 @@ public class Main extends Application {
                 // Проверка столкновения с дверью
                 if (keyDoorInteraction.checkDoorCollision(player.rect) && keyDoorInteraction.isDoorOpen()) {
                     keyDoorInteraction.showWinMessage(root, primaryStage);
+                }
+
+
+ */
+                for (KeyDoorInteraction interaction : interactions) {
+                    if (interaction.checkKeyCollision(player.rect)) {
+                        interaction.handleKeyCollision();
+                    }
+                    if (interaction.checkDoorCollision(player.rect) && interaction.isDoorOpen()) {
+                        interaction.showWinMessage(root, primaryStage);
+                        // Остановить таймер, чтобы игра не продолжалась
+                        this.stop();
+                        break; // Выход из цикла, если дверь открыта
+                    }
                 }
 
                 // Очистка и отрисовка
@@ -79,9 +127,8 @@ public class Main extends Application {
         // Обработка событий клавиатуры
         scene.setOnKeyPressed(event -> playerController.handleInput(player, event));
         scene.setOnKeyReleased(event -> {
-            // Сброс горизонтальной скорости при отпускании клавиши
             if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.A || event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.D) {
-                player.dx = 0;
+                player.dx = 0; // Сброс горизонтальной скорости при отпускании клавиши
             }
         });
 
@@ -91,6 +138,6 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
-        launch(args); // Запуск приложения
+        launch(args);
     }
 }

@@ -10,13 +10,21 @@ import javafx.stage.Stage;
 import java.io.InputStream;
 
 public class KeyDoorInteraction {
+    public static int score = 0; // Статическое поле для очков
+
+    public static void addScore(int points) {
+        score += points; // Увеличивает счетчик очков
+    }
+
     public boolean hasKey; // Флаг, указывающий, есть ли у игрока ключ
     public ImageView keySprite; // Спрайт ключа
     public ImageView doorSprite; // Спрайт двери
     private Image keyTexture; // Текстура ключа
     private Image doorClosedTexture; // Текстура закрытой двери
     private Image doorOpenedTexture; // Текстура открытой двери
-    private Text keyText; // Текст для отображения состояния ключ // Конструктор, загружающий изображения ключа и двери
+    private Text keyText; // Текст для отображения состояния ключ
+
+    // Конструктор, загружающий изображения ключа и двери
     public KeyDoorInteraction(InputStream keyPath, InputStream doorClosedPath, InputStream doorOpenedPath, String fontPath) {
         hasKey = false; // Изначально у игрока нет ключа
         keyTexture = new Image(keyPath); // Загрузка текстуры ключа
@@ -42,8 +50,8 @@ public class KeyDoorInteraction {
 
     // Метод для обновления текста состояния ключа
     public void updateKeyText() {
-        String keyStatus = hasKey ? "yes" : "no"; // Определяем текст в зависимости от наличия ключа
-        keyText.setText("Key: " + keyStatus); // Установка текста
+        String keyStatus = this.hasKey ? "yes" : "no"; // Определяем текст в зависимости от наличия ключа
+        this.keyText.setText("Key: " + keyStatus); // Установка текста
     }
 
     // Метод для добавления ключа и двери на панель
@@ -68,6 +76,10 @@ public class KeyDoorInteraction {
         updateKeyText(); // Обновление текста состояния ключа
         keySprite.setLayoutX(-100); // Убираем ключ с экрана
         doorSprite.setImage(doorOpenedTexture); // Меняем изображение двери на открытую
+
+        KeyDoorInteraction.addScore(10); // Добавляем очки
+        System.out.println("Current score: " + KeyDoorInteraction.score);
+
     }
 
     // Метод для проверки столкновения с дверью
@@ -87,8 +99,8 @@ public class KeyDoorInteraction {
     }
 
     // Метод для отображения сообщения о победе
-    // Метод для отображения сообщения о победе
-    public void showWinMessage(Pane pane,  Stage stage) {
+
+    public void showWinMessage(Pane pane, Stage stage) {
         Text winText = new Text("You completed the level! Continuing the game is in development..."); // Сообщение о победе
         winText.setFont(new Font(32));
         winText.setFill(javafx.scene.paint.Color.GREEN);
@@ -106,7 +118,7 @@ public class KeyDoorInteraction {
             // Используем Platform.runLater для удаления сообщения из основного потока
             Platform.runLater(() -> {
                 pane.getChildren().remove(winText); // Удаляем сообщение о победе
-                stage.close(); // Закрываем окно
+                 stage.close(); // Закрываем окно
             });
         }).start();
     }
