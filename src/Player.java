@@ -4,7 +4,7 @@ import javafx.scene.image.Image;
 
 public class Player {
     public double dx, dy; // Скорости по осям
-    public Rectangle2D rect; // Координаты, ширина и высота
+    public Rectangle2D rect; // Координаты, ширина и высотаЭ
     public boolean onGround; // Проверка, находится ли спрайт на земле
     public ImageView sprite; // Спрайт игрока
     private double currentFrame; // Текущий кадр анимации

@@ -50,24 +50,30 @@ public class Main extends Application {
 
 
          */
-        KeyDoorInteraction[] interactions = {
-                new KeyDoorInteraction(
-                        getClass().getResourceAsStream("/key2.jpg"),
-                        getClass().getResourceAsStream("/door_close2.jpg"),
-                        getClass().getResourceAsStream("/door_open2.jpg"),
-                        "arialmt.ttf"
-                ),
+        // Создание одномерного массива объектов KeyDoorInteraction
+        KeyDoorInteraction[] interactions = new KeyDoorInteraction[2];
+        try {
+            interactions[0] = new KeyDoorInteraction(
+                    getClass().getResourceAsStream("/key2.jpg"),
+                    getClass().getResourceAsStream("/door_close2.jpg"),
+                    getClass().getResourceAsStream("/door_open2.jpg"),
+                    "arialmt.ttf"
+            );
 
-                new KeyDoorInteraction(
-                        getClass().getResourceAsStream("/key.png"),
-                        getClass().getResourceAsStream("/door_close.jpg"),
-                        getClass().getResourceAsStream("/door_open.jpg"),
+            interactions[1] = new KeyDoorInteraction(
+                    getClass().getResourceAsStream("/key.png"),
+                    getClass().getResourceAsStream("/door_close.jpg"),
+                    getClass().getResourceAsStream("/door_open.jpg"),
+                    "arialmt.ttf"
+            );
 
-                        "arialmt.ttf"
-                )
-
-
-        };
+            for (KeyDoorInteraction interaction : interactions) {
+                interaction.draw(root);
+            }
+        } catch (Exception e) {
+            System.err.println("Error initializing KeyDoorInteraction: " + e.getMessage());
+            return; // Завершаем выполнение, если произошла ошибка
+        }
 
         for (KeyDoorInteraction interaction : interactions) {
             interaction.draw(root);

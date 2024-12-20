@@ -19,7 +19,7 @@ public class MapCollider {
                         }
                         // Столкновение с левой стеной
                         if (dxdy[0] < 0) {
-                            rect = new Rectangle2D(j * Map.TILE_SIZE + Map.TILE_SIZE, rect.getMinY(), rect.getWidth(), rect.getHeight());
+                         rect = new Rectangle2D(j * Map.TILE_SIZE + Map.TILE_SIZE, rect.getMinY(), rect.getWidth(), rect.getHeight());
                         }
                         dxdy[0] = 0; // Обнуляем горизонтальную скорость
                     } else {  // Вертикальное столкновение
