@@ -46,15 +46,6 @@ public class Main extends Application {
         ArrayList<KeyDoorInteraction> interactions = new ArrayList<>();
         try {
 
-            /*
-            interactions.add(new KeyDoorInteraction(
-                    getClass().getResourceAsStream("/key2.jpg"),
-                    getClass().getResourceAsStream("/door_close2.jpg"),
-                    getClass().getResourceAsStream("/door_open2.jpg"),
-                    "arialmt.ttf"
-            ));
- */
-
             // Добавление объектов производного класса
             interactions.add(new SpecialKeyDoorInteraction(
                     getClass().getResourceAsStream("/key2.jpg"),
