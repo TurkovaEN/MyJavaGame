@@ -9,6 +9,9 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.layout.Pane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Optional;
 
 public class Main extends Application {
     private long lastNanoTime;
@@ -39,40 +42,52 @@ public class Main extends Application {
         MapCollider mapCollider = new MapCollider();
         PlayerController playerController = new PlayerController();
 
-        /*
-        KeyDoorInteraction keyDoorInteraction = new KeyDoorInteraction(
-                getClass().getResourceAsStream("/key.png"),
-                getClass().getResourceAsStream("/door_close.jpg"),
-                getClass().getResourceAsStream("/door_open.jpg"),
-                "arialmt.ttf"
-        );
-        keyDoorInteraction.draw(root); // Отображаем ключ и дверь
-
-
-         */
-        // Создание одномерного массива объектов KeyDoorInteraction
-        KeyDoorInteraction[] interactions = new KeyDoorInteraction[2];
+        // Использование ArrayList для хранения объектов KeyDoorInteraction
+        ArrayList<KeyDoorInteraction> interactions = new ArrayList<>();
         try {
-            interactions[0] = new KeyDoorInteraction(
+
+            /*
+            interactions.add(new KeyDoorInteraction(
                     getClass().getResourceAsStream("/key2.jpg"),
                     getClass().getResourceAsStream("/door_close2.jpg"),
                     getClass().getResourceAsStream("/door_open2.jpg"),
                     "arialmt.ttf"
-            );
+            ));
+ */
 
-            interactions[1] = new KeyDoorInteraction(
+            // Добавление объектов производного класса
+            interactions.add(new SpecialKeyDoorInteraction(
+                    getClass().getResourceAsStream("/key2.jpg"),
+                    getClass().getResourceAsStream("/door_close2.jpg"),
+                    getClass().getResourceAsStream("/door_open2.jpg"),
+                    "arialmt.ttf",
+                    "This is a special key!"
+            ));
+            // Добавление объектов базового класса
+            interactions.add(new KeyDoorInteraction(
                     getClass().getResourceAsStream("/key.png"),
                     getClass().getResourceAsStream("/door_close.jpg"),
                     getClass().getResourceAsStream("/door_open.jpg"),
                     "arialmt.ttf"
-            );
+            ));
+
+
+            // Использование нового метода
+            for (KeyDoorInteraction interaction : interactions) {
+                if (interaction instanceof SpecialKeyDoorInteraction) {
+                    ((SpecialKeyDoorInteraction) interaction).useSpecialKey();
+                }
+            }
+
+            // Сортировка по координате X ключа
+            interactions.sort(Comparator.comparingDouble(k -> k.keySprite.getLayoutX()));
 
             for (KeyDoorInteraction interaction : interactions) {
                 interaction.draw(root);
             }
         } catch (Exception e) {
             System.err.println("Error initializing KeyDoorInteraction: " + e.getMessage());
-            return; // Завершаем выполнение, если произошла ошибка
+            return;
         }
 
         for (KeyDoorInteraction interaction : interactions) {
@@ -98,19 +113,17 @@ public class Main extends Application {
                 int collisionCount = mapCollider.countCollisions(player.rect);
                 System.out.println("Number of collisions: " + collisionCount);
 
-/*
-                // Проверка столкновения с ключом
-                if (keyDoorInteraction.checkKeyCollision(player.rect)) {
-                    keyDoorInteraction.handleKeyCollision();
+                // Поиск открытой двери
+                Optional<KeyDoorInteraction> openDoor = interactions.stream()
+                        .filter(KeyDoorInteraction::isDoorOpen)
+                        .findFirst();
+
+
+                if (openDoor.isPresent()) {
+                    System.out.println("door is opened");
                 }
 
-                // Проверка столкновения с дверью
-                if (keyDoorInteraction.checkDoorCollision(player.rect) && keyDoorInteraction.isDoorOpen()) {
-                    keyDoorInteraction.showWinMessage(root, primaryStage);
-                }
 
-
- */
                 for (KeyDoorInteraction interaction : interactions) {
                     if (interaction.checkKeyCollision(player.rect)) {
                         interaction.handleKeyCollision();
@@ -146,4 +159,5 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
 }
