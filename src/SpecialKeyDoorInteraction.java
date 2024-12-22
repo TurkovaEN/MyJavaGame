@@ -25,11 +25,14 @@ public class SpecialKeyDoorInteraction extends KeyDoorInteraction {
         }
     }
 
-
     @Override
     public void handleKeyCollision() {
         super.handleKeyCollision(); // Вызов метода базового класса
         // Дополнительная логика для специального ключа
         System.out.println("Special key collected!");
+    }
+    @Override
+    public boolean checkCollision(Rectangle2D playerRect) {
+        return checkKeyCollision(playerRect) || checkDoorCollision(playerRect);
     }
 }

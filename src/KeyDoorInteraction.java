@@ -9,20 +9,16 @@ import javafx.stage.Stage;
 
 import java.io.InputStream;
 
-public class KeyDoorInteraction implements Comparable<KeyDoorInteraction> {
+public class KeyDoorInteraction extends GameObject implements Comparable<KeyDoorInteraction>, Collidable {
+    protected String keyName; // Имя ключа
     public static int score = 0; // Статическое поле для очков
-
-    public static void addScore(int points) {
-        score += points; // Увеличивает счетчик очков
-    }
-
     public boolean hasKey; // Флаг, указывающий, есть ли у игрока ключ
     public ImageView keySprite; // Спрайт ключа
     public ImageView doorSprite; // Спрайт двери
     private Image keyTexture; // Текстура ключа
     private Image doorClosedTexture; // Текстура закрытой двери
     private Image doorOpenedTexture; // Текстура открытой двери
-    private Text keyText; // Текст для отображения состояния ключ
+    private Text keyText; // Текст для отображения состояния ключа
 
     // Конструктор, загружающий изображения ключа и двери
     public KeyDoorInteraction(InputStream keyPath, InputStream doorClosedPath, InputStream doorOpenedPath, String fontPath) {
@@ -109,6 +105,15 @@ public class KeyDoorInteraction implements Comparable<KeyDoorInteraction> {
         System.out.println("Current score: " + KeyDoorInteraction.score);
     }
 
+    // Перегруженный метод для обработки столкновения с ключом с дополнительной информацией
+    public void handleKeyCollision(String additionalInfo) {
+        hasKey = true; // Установка флага наличия ключа
+        updateKeyText(); // Обновление текста состояния ключа
+        keySprite.setLayoutX(-100); // Убираем ключ с экрана
+        doorSprite.setImage(doorOpenedTexture); // Меняем изображение двери на открытую
+        System.out.println(additionalInfo); // Вывод дополнительной информации
+    }
+
     // Метод для проверки столкновения с дверью
     public boolean checkDoorCollision(Rectangle2D playerRect) {
         Rectangle2D doorBounds = new Rectangle2D(
@@ -153,5 +158,27 @@ public class KeyDoorInteraction implements Comparable<KeyDoorInteraction> {
     public int compareTo(KeyDoorInteraction other) {
         // Сравниваем по координате X (или любому другому критерию)
         return Double.compare(this.keySprite.getLayoutX(), other.keySprite.getLayoutX());
+    }
+
+    @Override
+    public boolean checkCollision(Rectangle2D playerRect) {
+        return checkKeyCollision(playerRect) || checkDoorCollision(playerRect);
+    }
+
+    @Override
+    public String toString() {
+        return "KeyDoorInteraction: hasKey=" + hasKey;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        KeyDoorInteraction cloned = (KeyDoorInteraction) super.clone();
+        cloned.keySprite = new ImageView(this.keySprite.getImage());
+        cloned.doorSprite = new ImageView(this.doorSprite.getImage());
+        return cloned;
+    }
+
+    public static void addScore(int points) {
+        score += points; // Увеличивает счетчик очков
     }
 }
